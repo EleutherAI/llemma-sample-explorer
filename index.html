@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Llemma Sample Explorer</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .header,
+      .buttons,
+      .footer,
+      .key {
+        flex-shrink: 0;
+      }
+
+      .header {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+
+      .footer {
+        padding: 10px;
+      }
+
+      .scrollable-div {
+        flex-grow: 1;
+        overflow-y: auto;
+        background-color: #f5f5f5;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid black;
+      }
+
+      .buttons {
+        margin-top: 10px;
+      }
+
+      .btn {
+        margin-bottom: 7px;
+      }
+
+      .left-col {
+        width: 200px; /* Adjust this value as per your requirement */
+      }
+
+      table tr,
+      table td {
+        border: none !important;
+      }
+
+      .key-item {
+        margin-left: 2px;
+        margin-right: 2px;
+      }
+
+      .key-item::before {
+        content: ""; /* This is necessary for the pseudo-element to work */
+        display: inline-block;
+        width: 19px; /* Width of the square */
+        height: 19px; /* Height of the square */
+        margin-right: 5px; /* Space between the square and the text */
+        vertical-align: middle; /* Aligns the square with the text */
+        border: 1px solid black; /* Border around the square */
+        border-radius: 2px; /* Rounded corners */
+      }
+
+      .key-item.correct::before {
+        background-color: rgb(91, 204, 91); /* Color for "Correct" */
+      }
+
+      .key-item.incorrect::before {
+        background-color: rgb(255, 127, 127); /* Color for "Incorrect" */
+      }
+    </style>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+        },
+      };
+    </script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"
+    ></script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header row center-content">
+        <div class="col text-center">
+          <img src="imgs/llemma_logo_low_res.png" />
+          <p style="margin-top: -10px">SAMPLE EXPLORER</p>
+          <a href="#">paper</a> | <a href="#">blog</a>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="buttons text-center mb-3">
+        <button type="button" class="btn btn-primary">Algebra</button>
+        <button type="button" class="btn btn-light">
+          Counting and Probability
+        </button>
+        <button type="button" class="btn btn-light">Geometry</button>
+        <button type="button" class="btn btn-light">
+          Intermediate Algebra
+        </button>
+        <button type="button" class="btn btn-light">Number Theory</button>
+        <button type="button" class="btn btn-light">Prealgebra</button>
+        <button type="button" class="btn btn-light">Precalculus</button>
+        <button type="button" class="btn btn-light">GSM8k</button>
+        <button type="button" class="btn btn-light">OpenCourseWare</button>
+        <button type="button" class="btn btn-light">MMLU STEM</button>
+        <button type="button" class="btn btn-light">SAT</button>
+        <!-- Add more buttons as needed -->
+      </div>
+
+      <!-- Scrollable Content Area -->
+      <div class="scrollable-div">
+        <table class="table">
+          <tr>
+            <td class="left-col"><b>QUESTION</b></td>
+            <td>
+              If a drip of water is equivalent to $\frac{1}{4}$ of a milliliter,
+              how many drips are in a liter of water? Note: 1 liter = 1000
+              milliliters.
+            </td>
+          </tr>
+          <tr>
+            <td class="left-col"><b>MODEL ANSWER</b></td>
+            <td>
+              We know that 1 liter of water is equivalent to 1000 milliliters.
+              Since 1 milliliter is equivalent to 4 drips, we have that 1000
+              milliliters is equivalent to $4\cdot1000=4000$ drips. Therefore,
+              the answer is $\boxed{4000}$. Final Answer: The final answer is
+              $4000$.
+            </td>
+          </tr>
+          <tr>
+            <td class="left-col"><b>REFERENCE ANSWER</b></td>
+            <td>
+              If a drip of water is equivalent to $\frac{1}{4}$ of a milliliter,
+              then $4$ drips of water must be equivalent to $1$ milliliter of
+              water. Since there are $1000$ milliliters in a liter, it follows
+              that there are $4 \times 1000 = \boxed{4000}$ drips in a liter of
+              water.
+            </td>
+          </tr>
+          <tr>
+            <td class="left-col"><b>PROBLEM SOURCE</b></td>
+            <td>MATH Algebra Level 1</td>
+          </tr>
+          <tr>
+            <td class="left-col"><b>EVALUATION RESULT</b></td>
+            <td>Correct</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Key -->
+      <div class="key mt-3 text-center">
+        <span class="key-item correct">Correct</span>
+        <span class="key-item incorrect">Incorrect</span>
+      </div>
+
+      <div class="navigation-buttons text-center mt-3">
+        <button type="button" id="leftButton" class="btn btn-secondary">
+          &lt;&lt;
+        </button>
+        <button type="button" id="rightButton" class="btn btn-secondary">
+          &gt;&gt;
+        </button>
+        <div class="mt-2">
+          <span id="currentPage">1</span> / <span id="totalPages">4</span>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer text-center mt-3">Footer here...</div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        let currentPage = 1;
+        const totalPages = 4; // Set this to the actual number of total pages
+
+        function updateButtonStatus() {
+          // Disable the left button if at the beginning
+          if (currentPage <= 1) {
+            $("#leftButton").prop("disabled", true);
+          } else {
+            $("#leftButton").prop("disabled", false);
+          }
+
+          // Disable the right button if at the end
+          if (currentPage >= totalPages) {
+            $("#rightButton").prop("disabled", true);
+          } else {
+            $("#rightButton").prop("disabled", false);
+          }
+        }
+
+        // Initial button status update
+        updateButtonStatus();
+
+        $("#leftButton").click(function () {
+          if (currentPage > 1) {
+            currentPage--;
+            $("#currentPage").text(currentPage);
+          }
+          updateButtonStatus();
+        });
+
+        $("#rightButton").click(function () {
+          if (currentPage < totalPages) {
+            currentPage++;
+            $("#currentPage").text(currentPage);
+          }
+          updateButtonStatus();
+        });
+
+        $(".buttons button").click(function () {
+          // Revert all buttons to .btn-light class
+          $(".buttons button").removeClass("btn-primary").addClass("btn-light");
+
+          // Set the clicked button to .btn-primary class
+          $(this).removeClass("btn-light").addClass("btn-primary");
+        });
+      });
+    </script>
+  </body>
+</html>
