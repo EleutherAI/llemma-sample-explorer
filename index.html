@@ -171,6 +171,12 @@
       <div class="scrollable-div">
         <table class="table">
           <tr>
+            <td class="left-col">
+              <b>PROBLEM SOURCE</b>
+            </td>
+            <td id="problemSource">MATH Algebra Level 1</td>
+          </tr>
+          <tr>
             <td class="left-col"><b>QUESTION</b></td>
             <td id="question">
               If a drip of water is equivalent to $\frac{1}{4}$ of a milliliter,
@@ -179,16 +185,6 @@
             </td>
           </tr>
           <tr>
-            <td class="left-col"><b>MODEL ANSWER</b></td>
-            <td id="modelAnswer">
-              We know that 1 liter of water is equivalent to 1000 milliliters.
-              Since 1 milliliter is equivalent to 4 drips, we have that 1000
-              milliliters is equivalent to $4\cdot1000=4000$ drips. Therefore,
-              the answer is $\boxed{4000}$. Final Answer: The final answer is
-              $4000$.
-            </td>
-          </tr>
-          <tr class="fade-in">
             <td class="left-col">
               <b>REFERENCE ANSWER</b>
             </td>
@@ -200,11 +196,17 @@
               water.
             </td>
           </tr>
-          <tr class="fade-in">
+          <tr>
             <td class="left-col">
-              <b>PROBLEM SOURCE</b>
+              <b>MODEL ANSWER</b>
             </td>
-            <td id="problemSource">MATH Algebra Level 1</td>
+            <td id="modelAnswer">
+              We know that 1 liter of water is equivalent to 1000 milliliters.
+              Since 1 milliliter is equivalent to 4 drips, we have that 1000
+              milliliters is equivalent to $4\cdot1000=4000$ drips. Therefore,
+              the answer is $\boxed{4000}$. Final Answer: The final answer is
+              $4000$.
+            </td>
           </tr>
           <tr class="fade-in">
             <td class="left-col">
@@ -216,10 +218,10 @@
       </div>
 
       <!-- Key -->
-      <div class="key mt-3 text-center">
+      <!-- <div class="key mt-3 text-center">
         <span class="key-item correct">Correct</span>
         <span class="key-item incorrect">Incorrect</span>
-      </div>
+      </div> -->
 
       <div class="navigation-buttons text-center mt-3">
         <button type="button" id="leftButton" class="btn btn-secondary">
@@ -269,15 +271,20 @@
           // $(".fade-in").prop("hidden", true);
           // remove .visible from the .fade-in elements
           $(".fade-in").removeClass("visible");
-          if (data[idx]["result"] == "Correct") {
-            $(".scrollable-div").css("background-color", correctColor);
-          } else {
-            $(".scrollable-div").css("background-color", incorrectColor);
-          }
+          // if (data[idx]["result"] == "Correct") {
+          //   $(".scrollable-div").css("background-color", correctColor);
+          // } else {
+          //   $(".scrollable-div").css("background-color", incorrectColor);
+          // }
+          $("#referenceAnswer").text(data[idx]["reference_answer"]);
+          $("#problemSource").text(data[idx]["problem_source"]);
           typeModelAnswer(data[idx]["model_answer"], function () {
             // Callback function to be executed after the model answer is typed
-            $("#referenceAnswer").text(data[idx]["reference_answer"]);
-            $("#result").text(data[idx]["result"]);
+            if (data[idx]["result"] == "Correct") {
+              $("#result").text("✅ " + data[idx]["result"]);
+            } else {
+              $("#result").text("❌ " + data[idx]["result"]);
+            }
             MathJax.typesetPromise();
             // $(".fade-in").prop("hidden", false);
             $(".fade-in").addClass("visible");
