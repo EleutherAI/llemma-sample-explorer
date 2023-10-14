@@ -82,11 +82,41 @@
       }
 
       .key-item.correct::before {
-        background-color: rgb(91, 204, 91); /* Color for "Correct" */
+        background-color: #f5f5f5; /* Color for "Correct" */
       }
 
       .key-item.incorrect::before {
-        background-color: rgb(255, 127, 127); /* Color for "Incorrect" */
+        background-color: rgb(255 187 187); /* Color for "Incorrect" */
+      }
+
+      .typing-cursor {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        background-color: black;
+        border-radius: 50%; /* Make it round */
+        animation: pulse 1s infinite;
+      }
+
+      .fade-in {
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out; /* 1 second fade time */
+        visibility: hidden;
+      }
+
+      .fade-in.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.5);
+        }
       }
     </style>
 
@@ -103,7 +133,6 @@
     </script>
     <script
       id="MathJax-script"
-      async
       src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"
     ></script>
   </head>
@@ -112,7 +141,7 @@
       <!-- Header -->
       <div class="header row center-content">
         <div class="col text-center">
-          <img src="imgs/llemma_logo_low_res.png" />
+          <img src="imgs/llemma_logo.png" width="300px" />
           <p style="margin-top: -10px">SAMPLE EXPLORER</p>
           <a href="#">paper</a> | <a href="#">blog</a>
         </div>
@@ -143,7 +172,7 @@
         <table class="table">
           <tr>
             <td class="left-col"><b>QUESTION</b></td>
-            <td>
+            <td id="question">
               If a drip of water is equivalent to $\frac{1}{4}$ of a milliliter,
               how many drips are in a liter of water? Note: 1 liter = 1000
               milliliters.
@@ -151,7 +180,7 @@
           </tr>
           <tr>
             <td class="left-col"><b>MODEL ANSWER</b></td>
-            <td>
+            <td id="modelAnswer">
               We know that 1 liter of water is equivalent to 1000 milliliters.
               Since 1 milliliter is equivalent to 4 drips, we have that 1000
               milliliters is equivalent to $4\cdot1000=4000$ drips. Therefore,
@@ -159,9 +188,11 @@
               $4000$.
             </td>
           </tr>
-          <tr>
-            <td class="left-col"><b>REFERENCE ANSWER</b></td>
-            <td>
+          <tr class="fade-in">
+            <td class="left-col">
+              <b>REFERENCE ANSWER</b>
+            </td>
+            <td id="referenceAnswer">
               If a drip of water is equivalent to $\frac{1}{4}$ of a milliliter,
               then $4$ drips of water must be equivalent to $1$ milliliter of
               water. Since there are $1000$ milliliters in a liter, it follows
@@ -169,13 +200,17 @@
               water.
             </td>
           </tr>
-          <tr>
-            <td class="left-col"><b>PROBLEM SOURCE</b></td>
-            <td>MATH Algebra Level 1</td>
+          <tr class="fade-in">
+            <td class="left-col">
+              <b>PROBLEM SOURCE</b>
+            </td>
+            <td id="problemSource">MATH Algebra Level 1</td>
           </tr>
-          <tr>
-            <td class="left-col"><b>EVALUATION RESULT</b></td>
-            <td>Correct</td>
+          <tr class="fade-in">
+            <td class="left-col">
+              <b>EVALUATION RESULT</b>
+            </td>
+            <td id="result">Correct</td>
           </tr>
         </table>
       </div>
@@ -205,11 +240,82 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="samples.js"></script>
 
     <script>
       $(document).ready(function () {
         let currentPage = 1;
-        const totalPages = 4; // Set this to the actual number of total pages
+        let totalPages = 4;
+        let correctColor = "#f5f5f5";
+        let incorrectColor = "rgb(255 187 187)";
+        let typingInterval; // outside of the function, to store the interval ID
+        let isTyping = false;
+        changeSubject("Algebra");
+
+        function changeSubject(subject) {
+          curSubject = subject;
+          data = DATA[curSubject];
+          totalPages = data.length;
+          $("#totalPages").text(totalPages);
+          currentPage = 1;
+          $("#currentPage").text(currentPage);
+          updateData(currentPage);
+          updateButtonStatus();
+        }
+
+        function updateData(idx) {
+          idx = idx - 1;
+          $("#question").text(data[idx]["question"]);
+          // $(".fade-in").prop("hidden", true);
+          // remove .visible from the .fade-in elements
+          $(".fade-in").removeClass("visible");
+          if (data[idx]["result"] == "Correct") {
+            $(".scrollable-div").css("background-color", correctColor);
+          } else {
+            $(".scrollable-div").css("background-color", incorrectColor);
+          }
+          typeModelAnswer(data[idx]["model_answer"], function () {
+            // Callback function to be executed after the model answer is typed
+            $("#referenceAnswer").text(data[idx]["reference_answer"]);
+            $("#result").text(data[idx]["result"]);
+            MathJax.typesetPromise();
+            // $(".fade-in").prop("hidden", false);
+            $(".fade-in").addClass("visible");
+          });
+        }
+
+        function typeModelAnswer(answer, callback) {
+          if (isTyping) {
+            clearInterval(typingInterval); // Clear the ongoing typing if there is one
+          }
+
+          let target = $("#modelAnswer");
+          let words = answer.split(" "); // Split the answer into words
+          let i = 0;
+          target.text(""); // Clear the current content.
+          isTyping = true;
+
+          // Append the cursor
+          let cursor = $('<span class="typing-cursor"></span>');
+          target.append(cursor);
+
+          typingInterval = setInterval(function () {
+            if (i < words.length) {
+              // If the target is not empty (i.e., not the start), append a space before the word
+              if (i !== 0) {
+                cursor.before(" "); // Append a space before the cursor
+              }
+              cursor.before(words[i]); // Insert the word before the cursor
+              i++;
+            } else {
+              clearInterval(typingInterval); // Stop the interval when the full answer is displayed.
+              cursor.remove(); // Remove the cursor
+              isTyping = false;
+              callback();
+            }
+            MathJax.typesetPromise();
+          }, 15); // Increase interval time as now it types a word at once.
+        }
 
         function updateButtonStatus() {
           // Disable the left button if at the beginning
@@ -234,6 +340,7 @@
           if (currentPage > 1) {
             currentPage--;
             $("#currentPage").text(currentPage);
+            updateData(currentPage);
           }
           updateButtonStatus();
         });
@@ -242,6 +349,7 @@
           if (currentPage < totalPages) {
             currentPage++;
             $("#currentPage").text(currentPage);
+            updateData(currentPage);
           }
           updateButtonStatus();
         });
@@ -252,6 +360,8 @@
 
           // Set the clicked button to .btn-primary class
           $(this).removeClass("btn-light").addClass("btn-primary");
+
+          changeSubject($(this).text().trim());
         });
       });
     </script>
