@@ -40,7 +40,8 @@
       }
 
       .scrollable-div {
-        flex-grow: 1;
+        /* flex-grow: 1; */
+        height: calc(100vh - 430px);
         overflow-y: auto;
         background-color: #f5f5f5;
         padding: 10px;
@@ -86,7 +87,7 @@
       }
 
       .key-item.correct::before {
-        background-color: #f5f5f5; /* Color for "Correct" */
+        background-color: #3ebd66; /* Color for "Correct" */
       }
 
       .key-item.incorrect::before {
@@ -122,6 +123,12 @@
           transform: scale(1.5);
         }
       }
+
+      #modelAnswer {
+        /* border: 1px solid black !important; */
+        background-color: white;
+        border-radius: 10px;
+      }
     </style>
 
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -153,21 +160,59 @@
 
       <!-- Buttons -->
       <div class="buttons text-center mb-3">
-        <button type="button" class="btn btn-primary">Algebra</button>
-        <button type="button" class="btn btn-light">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data="minerva_math_algebra"
+        >
+          Algebra
+        </button>
+        <button
+          type="button"
+          class="btn btn-light"
+          data="minerva_math_counting_and_prob"
+        >
           Counting and Probability
         </button>
-        <button type="button" class="btn btn-light">Geometry</button>
-        <button type="button" class="btn btn-light">
+        <button
+          type="button"
+          class="btn btn-light"
+          data="minerva_math_geometry"
+        >
+          Geometry
+        </button>
+        <button
+          type="button"
+          class="btn btn-light"
+          data="minerva_math_intermediate_algebra"
+        >
           Intermediate Algebra
         </button>
-        <button type="button" class="btn btn-light">Number Theory</button>
-        <button type="button" class="btn btn-light">Prealgebra</button>
-        <button type="button" class="btn btn-light">Precalculus</button>
-        <button type="button" class="btn btn-light">GSM8k</button>
-        <button type="button" class="btn btn-light">OpenCourseWare</button>
-        <button type="button" class="btn btn-light">MMLU STEM</button>
-        <button type="button" class="btn btn-light">SAT</button>
+        <button
+          type="button"
+          class="btn btn-light"
+          data="minerva_math_num_theory"
+        >
+          Number Theory
+        </button>
+        <button
+          type="button"
+          class="btn btn-light"
+          data="minerva_math_prealgebra"
+        >
+          Prealgebra
+        </button>
+        <button type="button" class="btn btn-light" data="minerva_math_precalc">
+          Precalculus
+        </button>
+        <button type="button" class="btn btn-light" data="gsm8k">GSM8k</button>
+        <button type="button" class="btn btn-light" data="ocw_courses">
+          OpenCourseWare
+        </button>
+        <button type="button" class="btn btn-light" data="mmlu">
+          MMLU STEM
+        </button>
+        <button type="button" class="btn btn-light" data="sat">SAT</button>
         <!-- Add more buttons as needed -->
       </div>
 
@@ -188,18 +233,6 @@
               milliliters.
             </td>
           </tr>
-          <tr class="bottom-border">
-            <td class="left-col">
-              <b>REFERENCE ANSWER</b>
-            </td>
-            <td id="referenceAnswer">
-              If a drip of water is equivalent to $\frac{1}{4}$ of a milliliter,
-              then $4$ drips of water must be equivalent to $1$ milliliter of
-              water. Since there are $1000$ milliliters in a liter, it follows
-              that there are $4 \times 1000 = \boxed{4000}$ drips in a liter of
-              water.
-            </td>
-          </tr>
           <tr>
             <td class="left-col">
               <b>LLEMMA 34B</b>
@@ -217,6 +250,18 @@
               <b>EVALUATION RESULT</b>
             </td>
             <td id="result">Correct</td>
+          </tr>
+          <tr>
+            <td class="left-col">
+              <b>REFERENCE ANSWER</b>
+            </td>
+            <td id="referenceAnswer">
+              If a drip of water is equivalent to $\frac{1}{4}$ of a milliliter,
+              then $4$ drips of water must be equivalent to $1$ milliliter of
+              water. Since there are $1000$ milliliters in a liter, it follows
+              that there are $4 \times 1000 = \boxed{4000}$ drips in a liter of
+              water.
+            </td>
           </tr>
         </table>
       </div>
@@ -246,17 +291,18 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="samples.js"></script>
+    <script src="samples_gen.js"></script>
 
     <script>
       $(document).ready(function () {
         let currentPage = 1;
         let totalPages = 4;
-        let correctColor = "#f5f5f5";
-        let incorrectColor = "rgb(255 187 187)";
+        // let correctColor = "#f5f5f5";
+        let correctColor = "#B4F3BC";
+        let incorrectColor = "#FF8181";
         let typingInterval; // outside of the function, to store the interval ID
         let isTyping = false;
-        changeSubject("Algebra");
+        changeSubject("minerva_math_algebra");
 
         function changeSubject(subject) {
           curSubject = subject;
@@ -272,60 +318,21 @@
         function updateData(idx) {
           idx = idx - 1;
           $("#question").text(data[idx]["question"]);
-          // $(".fade-in").prop("hidden", true);
-          // remove .visible from the .fade-in elements
-          $(".fade-in").removeClass("visible");
-          // if (data[idx]["result"] == "Correct") {
-          //   $(".scrollable-div").css("background-color", correctColor);
-          // } else {
-          //   $(".scrollable-div").css("background-color", incorrectColor);
-          // }
-          $("#referenceAnswer").text(data[idx]["reference_answer"]);
+          // $(".fade-in").removeClass("visible");
+          $("#referenceAnswer").html(data[idx]["reference_answer"]);
           $("#problemSource").text(data[idx]["problem_source"]);
-          typeModelAnswer(data[idx]["model_answer"], function () {
-            // Callback function to be executed after the model answer is typed
-            if (data[idx]["result"] == "Correct") {
-              $("#result").text("✅ " + data[idx]["result"]);
-            } else {
-              $("#result").text("❌ " + data[idx]["result"]);
-            }
-            MathJax.typesetPromise();
-            // $(".fade-in").prop("hidden", false);
-            $(".fade-in").addClass("visible");
-          });
-        }
-
-        function typeModelAnswer(answer, callback) {
-          if (isTyping) {
-            clearInterval(typingInterval); // Clear the ongoing typing if there is one
+          // replace \n with <br> for model answer
+          model_answer = data[idx]["model_answer"].replace(/\n/g, "<br>");
+          $("#modelAnswer").html(model_answer);
+          if (data[idx]["result"] == "Correct") {
+            $("#result").text("✅ " + data[idx]["result"]);
+            $("#modelAnswer").css("background-color", correctColor);
+          } else {
+            $("#result").text("❌ " + data[idx]["result"]);
+            $("#modelAnswer").css("background-color", incorrectColor);
           }
-
-          let target = $("#modelAnswer");
-          let words = answer.split(" "); // Split the answer into words
-          let i = 0;
-          target.text(""); // Clear the current content.
-          isTyping = true;
-
-          // Append the cursor
-          let cursor = $('<span class="typing-cursor"></span>');
-          target.append(cursor);
-
-          typingInterval = setInterval(function () {
-            if (i < words.length) {
-              // If the target is not empty (i.e., not the start), append a space before the word
-              if (i !== 0) {
-                cursor.before(" "); // Append a space before the cursor
-              }
-              cursor.before(words[i]); // Insert the word before the cursor
-              i++;
-            } else {
-              clearInterval(typingInterval); // Stop the interval when the full answer is displayed.
-              cursor.remove(); // Remove the cursor
-              isTyping = false;
-              callback();
-            }
-            MathJax.typesetPromise();
-          }, 30); // Increase interval time as now it types a word at once.
+          $(".fade-in").addClass("visible");
+          MathJax.typesetPromise();
         }
 
         function updateButtonStatus() {
@@ -372,7 +379,11 @@
           // Set the clicked button to .btn-primary class
           $(this).removeClass("btn-light").addClass("btn-primary");
 
-          changeSubject($(this).text().trim());
+          // get the "data" attribute of this
+          let subject = $(this).attr("data");
+          console.log(subject);
+
+          changeSubject(subject);
         });
       });
     </script>
