@@ -235,7 +235,15 @@
           </tr>
           <tr>
             <td class="left-col">
-              <b>LLEMMA 34B</b>
+              <b
+                >LLEMMA 34B<br /><small
+                  >Answers sampled using
+                  <a href="https://arxiv.org/abs/2203.11171"
+                    >self-consistency</a
+                  >
+                  with $k=256$.</small
+                ></b
+              >
             </td>
             <td id="modelAnswer">
               We know that 1 liter of water is equivalent to 1000 milliliters.
@@ -247,7 +255,11 @@
           </tr>
           <tr class="fade-in">
             <td class="left-col">
-              <b>EVALUATION RESULT</b>
+              <b
+                >EVALUATION RESULT<br /><small
+                  >Automatic evaluation results are sometimes inaccurate.</small
+                ></b
+              >
             </td>
             <td id="result">Correct</td>
           </tr>
@@ -370,6 +382,32 @@
             updateData(currentPage);
           }
           updateButtonStatus();
+        });
+
+        $(document).keydown(function (e) {
+          switch (e.which) {
+            case 37: // left arrow key
+              if (currentPage > 1) {
+                currentPage--;
+                $("#currentPage").text(currentPage);
+                updateData(currentPage);
+              }
+              updateButtonStatus();
+              break;
+
+            case 39: // right arrow key
+              if (currentPage < totalPages) {
+                currentPage++;
+                $("#currentPage").text(currentPage);
+                updateData(currentPage);
+              }
+              updateButtonStatus();
+              break;
+
+            default:
+              return; // exit this handler for other keys
+          }
+          e.preventDefault(); // prevent the default action (scroll / move caret)
         });
 
         $(".buttons button").click(function () {
